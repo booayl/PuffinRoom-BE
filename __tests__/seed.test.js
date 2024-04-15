@@ -36,7 +36,7 @@ describe("GET /api/topics", () => {
     return request(app)
       .get("/api/topics")
       .expect(200)
-      .then(({ body:{topics} }) => {
+      .then(({ body: { topics } }) => {
         expect(topics.length).toBe(3);
         topics.forEach((topic) => {
           expect(topic).toMatchObject({
@@ -130,22 +130,22 @@ describe("GET /api/articles/:article_id/comments", () => {
         });
       });
   });
-});
-test("GET404: Invalid ID Input", () => {
-  return request(app)
-    .get("/api/articles/99/comments")
-    .expect(404)
-    .then(({ body }) => {
-      const { msg } = body;
-      expect(msg).toBe("Non-existent ID");
-    });
-});
-test("GET400: Invalid Input Type", () => {
-  return request(app)
-    .get("/api/articles/not-a-number/comments")
-    .expect(400)
-    .then(({ body }) => {
-      const { msg } = body;
-      expect(msg).toBe("Invalid ID Type");
-    });
+  test("GET404: Invalid ID Input", () => {
+    return request(app)
+      .get("/api/articles/99/comments")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Non-existent ID");
+      });
+  });
+  test("GET400: Invalid Input Type", () => {
+    return request(app)
+      .get("/api/articles/not-a-number/comments")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Invalid ID Type");
+      });
+  });
 });
