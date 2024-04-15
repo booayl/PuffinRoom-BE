@@ -11,7 +11,7 @@ exports.fetchArticleById = (article_id) => {
     .query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
     .then(({ rows }) => {
       if (rows.length === 0) {
-        return Promise.reject({ status: 400, msg: "Invalid ID Input" });
+        return Promise.reject({ status: 404, msg: "Non-existent ID" });
       }
       return rows[0];
     });
@@ -43,7 +43,7 @@ exports.fetchCommentsByArticleID = (article_id,sort_by = "created_at", order = "
     return db.query(sqlQueryString,[article_id])
     .then(({rows})=>{
         if (rows.length === 0) {
-            return Promise.reject({ status: 400, msg: "Invalid ID Input" });
+            return Promise.reject({ status: 404, msg: "Non-existent ID" });
           }
         return rows
     })

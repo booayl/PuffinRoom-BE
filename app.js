@@ -3,7 +3,6 @@ const app = express();
 const endpoints = require("./endpoints.json");
 
 app.use(express.json());
-app.get;
 
 const { getTopics, getArticleById , getArticles, getCommentsByArticleID} = require("./controllers");
 
