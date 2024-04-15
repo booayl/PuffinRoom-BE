@@ -18,7 +18,7 @@ exports.fetchArticleById = (article_id) => {
 };
 
 exports.fetchArticles = (sort_by = "created_at", order = "DESC") => {
-  let sqlQueryString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url,
+  let sqlQueryString = `SELECT articles.*,
     COUNT(comments.article_id)::INT AS comment_count
     FROM comments
     RIGHT JOIN articles
@@ -31,3 +31,20 @@ exports.fetchArticles = (sort_by = "created_at", order = "DESC") => {
     return rows;
   });
 };
+
+exports.fetchCommentsByArticleID = (article_id,sort_by = "created_at", order = "DESC") =>{
+    let sqlQueryString = `SELECT comments.* 
+    FROM comments 
+    INNER JOIN articles 
+    ON comments.article_id = articles.article_id `
+
+    sqlQueryString += `WHERE comments.article_id = $1 ORDER BY ${sort_by} ${order};`
+
+    return db.query(sqlQueryString,[article_id])
+    .then(({rows})=>{
+        if (rows.length === 0) {
+            return Promise.reject({ status: 400, msg: "Invalid ID Input" });
+          }
+        return rows
+    })
+}
