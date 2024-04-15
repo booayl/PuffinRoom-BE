@@ -3,11 +3,12 @@ const seed = require("../db/seeds/seed");
 const request = require("supertest");
 const db = require("../db/connection");
 const app = require("../app");
+const endpoints = require("../endpoints.json")
 
 beforeAll(() => seed(data));
 afterAll(() => db.end());
 
-describe("Invalid Endpoint",()=>{
+describe("404 Invalid Endpoint",()=>{
     test("GET ALL 404: Endpoint not found",()=>{
         return request(app)
         .get("/api/topic")
@@ -18,6 +19,17 @@ describe("Invalid Endpoint",()=>{
         })
       });
 })
+
+describe("GET /api", () => {
+    test("GET200: provide a description of all other endpoints available", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then((res) => {
+          expect(res.body.endpoints).toEqual(endpoints);
+        });
+    })
+  });
 
 describe("GET /api/topics", () => {
   test("GET200: Endpoint responds with an array of topic objects with slug and description", () => {
