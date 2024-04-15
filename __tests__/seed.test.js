@@ -36,12 +36,13 @@ describe("GET /api/topics", () => {
     return request(app)
       .get("/api/topics")
       .expect(200)
-      .then(({ body }) => {
-        const topics = body;
+      .then(({ body:{topics} }) => {
         expect(topics.length).toBe(3);
         topics.forEach((topic) => {
-          expect(typeof topic.slug).toBe("string");
-          expect(typeof topic.description).toBe("string");
+          expect(topic).toMatchObject({
+            slug: expect.any(String),
+            description: expect.any(String),
+          });
         });
       });
   });
@@ -53,23 +54,25 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/1")
       .expect(200)
       .then(({ body: { article } }) => {
-        expect(typeof article.author).toBe("string");
-        expect(typeof article.title).toBe("string");
-        expect(typeof article.article_id).toBe("number");
-        expect(typeof article.body).toBe("string");
-        expect(typeof article.topic).toBe("string");
-        expect(typeof article.created_at).toBe("string");
-        expect(typeof article.votes).toBe("number");
-        expect(typeof article.article_img_url).toBe("string");
+        expect(article).toMatchObject({
+          author: expect.any(String),
+          title: expect.any(String),
+          article_id: expect.any(Number),
+          body: expect.any(String),
+          topic: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          article_img_url: expect.any(String),
+        });
       });
   });
-  test("GET400: Invalid ID Input", () => {
+  test("GET404: Non-existent ID", () => {
     return request(app)
       .get("/api/articles/99")
-      .expect(400)
+      .expect(404)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("Invalid ID Input");
+        expect(msg).toBe("Non-existent ID");
       });
   });
   test("GET400: Invalid Input Type", () => {
@@ -92,14 +95,16 @@ describe("GET /api/articles", () => {
         expect(allArticles.length).toBe(13);
         expect(allArticles).toBeSortedBy("created_at", { descending: true });
         allArticles.forEach((article) => {
-          expect(typeof article.author).toBe("string");
-          expect(typeof article.title).toBe("string");
-          expect(typeof article.article_id).toBe("number");
-          expect(typeof article.topic).toBe("string");
-          expect(typeof article.created_at).toBe("string");
-          expect(typeof article.votes).toBe("number");
-          expect(typeof article.article_img_url).toBe("string");
-          expect(typeof article.comment_count).toBe("number");
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(Number),
+          });
         });
       });
   });
@@ -114,31 +119,33 @@ describe("GET /api/articles/:article_id/comments", () => {
         expect(allComments.length).toBe(11);
         expect(allComments).toBeSortedBy("created_at", { descending: true });
         allComments.forEach((comment) => {
-          expect(typeof comment.comment_id).toBe("number");
-          expect(typeof comment.votes).toBe("number");
-          expect(typeof comment.created_at).toBe("string");
-          expect(typeof comment.author).toBe("string");
-          expect(typeof comment.body).toBe("string");
-          expect(comment.article_id).toBe(1);
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            article_id: 1,
+          });
         });
       });
-  }) ;
-  test("GET400: Invalid ID Input", () => {
-    return request(app)
-      .get("/api/articles/99/comments")
-      .expect(400)
-      .then(({ body }) => {
-        const { msg } = body;
-        expect(msg).toBe("Invalid ID Input");
-      });
   });
-  test("GET400: Invalid Input Type", () => {
-    return request(app)
-      .get("/api/articles/not-a-number/comments")
-      .expect(400)
-      .then(({ body }) => {
-        const { msg } = body;
-        expect(msg).toBe("Invalid ID Type");
-      });
-  });
+});
+test("GET404: Invalid ID Input", () => {
+  return request(app)
+    .get("/api/articles/99/comments")
+    .expect(404)
+    .then(({ body }) => {
+      const { msg } = body;
+      expect(msg).toBe("Non-existent ID");
+    });
+});
+test("GET400: Invalid Input Type", () => {
+  return request(app)
+    .get("/api/articles/not-a-number/comments")
+    .expect(400)
+    .then(({ body }) => {
+      const { msg } = body;
+      expect(msg).toBe("Invalid ID Type");
+    });
 });
