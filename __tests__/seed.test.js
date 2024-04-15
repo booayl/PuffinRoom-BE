@@ -3,33 +3,33 @@ const seed = require("../db/seeds/seed");
 const request = require("supertest");
 const db = require("../db/connection");
 const app = require("../app");
-const endpoints = require("../endpoints.json")
+const endpoints = require("../endpoints.json");
 
 beforeAll(() => seed(data));
 afterAll(() => db.end());
 
-describe("404 Invalid Endpoint",()=>{
-    test("GET ALL 404: Endpoint not found",()=>{
-        return request(app)
-        .get("/api/topic")
-        .expect(404)
-        .then((body)=>{
-            expect(body.status).toBe(404)
-            expect(body.text).toBe("Invalid Endpoint")
-        })
+describe("404 Invalid Endpoint", () => {
+  test("GET ALL 404: Endpoint not found", () => {
+    return request(app)
+      .get("/api/topic")
+      .expect(404)
+      .then((body) => {
+        expect(body.status).toBe(404);
+        expect(body.text).toBe("Invalid Endpoint");
       });
-})
+  });
+});
 
 describe("GET /api", () => {
-    test("GET200: provide a description of all other endpoints available", () => {
-      return request(app)
-        .get("/api")
-        .expect(200)
-        .then((res) => {
-          expect(res.body.endpoints).toEqual(endpoints);
-        });
-    })
+  test("GET200: provide a description of all other endpoints available", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.endpoints).toEqual(endpoints);
+      });
   });
+});
 
 describe("GET /api/topics", () => {
   test("GET200: Endpoint responds with an array of topic objects with slug and description", () => {
@@ -44,5 +44,41 @@ describe("GET /api/topics", () => {
           expect(typeof topic.description).toBe("string");
         });
       });
-  })
+  });
+});
+
+describe("GET /api/articles/:article_id", () => {
+  test("GET200: Endpoint responds with selected article by its ID", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(typeof article.author).toBe("string");
+        expect(typeof article.title).toBe("string");
+        expect(typeof article.article_id).toBe("number");
+        expect(typeof article.body).toBe("string");
+        expect(typeof article.topic).toBe("string");
+        expect(typeof article.created_at).toBe("string");
+        expect(typeof article.votes).toBe("number");
+        expect(typeof article.article_img_url).toBe("string");
+      });
+  });
+  test("GET400: Invalid ID Input", () => {
+    return request(app)
+      .get("/api/articles/99")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Invalid ID Input");
+      });
+  });
+  test("GET400: Invalid Input Type", () => {
+    return request(app)
+      .get("/api/articles/not-a-number")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Invalid ID Type");
+      });
+  });
 });
