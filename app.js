@@ -5,7 +5,7 @@ const endpoints = require("./endpoints.json");
 app.use(express.json());
 app.get;
 
-const { getTopics, getArticleById , getArticles} = require("./controllers");
+const { getTopics, getArticleById, getArticles } = require("./controllers");
 
 //Respond a list of all available endpoints from endpoint.json
 app.get("/api", (req, res, next) => {
@@ -15,10 +15,10 @@ app.get("/api", (req, res, next) => {
 app.get("/api/topics", getTopics);
 
 app.get("/api/articles/:article_id", getArticleById);
-app.get("/api/articles", getArticles)
+app.get("/api/articles", getArticles);
 
 //Error Handling Middleware
-app.all("*",(req, res) => {
+app.all("*", (req, res) => {
   res.status(404).send("Invalid Endpoint");
 });
 
