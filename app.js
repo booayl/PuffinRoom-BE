@@ -19,7 +19,7 @@ app.get("/api/articles", getArticles)
 app.get("/api/articles/:article_id/comments", getCommentsByArticleID)
 
 //Error Handling Middleware
-app.all("*",(req, res) => {
+app.all("*", (req, res) => {
   res.status(404).send("Invalid Endpoint");
 });
 
