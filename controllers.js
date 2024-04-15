@@ -1,4 +1,4 @@
-const { fetchTopics, fetchArticle } = require("./model");
+const { fetchTopics, fetchArticleById, fetchArticles } = require("./model");
 
 exports.getTopics = (req, res, next) => {
   fetchTopics().then((topics) => {
@@ -6,9 +6,9 @@ exports.getTopics = (req, res, next) => {
   });
 };
 
-exports.getArticle = (req, res, next) => {
+exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
-  fetchArticle(article_id)
+  fetchArticleById(article_id)
     .then((article) => {
       res.status(200).send({ article });
     })
@@ -16,3 +16,11 @@ exports.getArticle = (req, res, next) => {
       next(err);
     });
 };
+
+exports.getArticles = (req,res,next)=>{
+    const {sort_by , order} = req.query
+    fetchArticles(sort_by , order)
+    .then((articles)=>{
+        res.status(200).send({allArticles : articles})
+    })
+}
