@@ -329,7 +329,7 @@ describe("DELETE /api/comments/:comment_id", () => {
         expect(msg).toBe("Non-existent Comment ID");
       });
   });
-  test.only("DELETE400: Respond with an error when an input comment ID is the incorrect type", () => {
+  test("DELETE400: Respond with an error when an input comment ID is the incorrect type", () => {
     return request(app)
       .delete("/api/comments/not-a-number")
       .expect(400)
