@@ -4,6 +4,7 @@ const {
   fetchArticleById,
   fetchArticles,
   fetchCommentsByArticleID,
+  checkArticleExists,
   createComment,
 } = require("./model");
 
@@ -34,8 +35,9 @@ exports.getArticles = (req, res, next) => {
 exports.getCommentsByArticleID = (req, res, next) => {
   const { article_id } = req.params;
   const { sort_by, order } = req.query;
-  fetchCommentsByArticleID(article_id, sort_by, order)
-    .then((comments) => {
+
+  Promise.all([fetchCommentsByArticleID(article_id, sort_by, order),checkArticleExists(article_id)])
+    .then(([comments]) => {
       res.status(200).send({ allComments: comments });
     })
     .catch((err) => {

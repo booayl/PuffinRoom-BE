@@ -60,7 +60,7 @@ describe("GET /api/articles/:article_id", () => {
           article_id: expect.any(Number),
           body: expect.any(String),
           topic: expect.any(String),
-          created_at: expect.any(String),
+          created_at: expect.toBeDateString(),
           votes: expect.any(Number),
           article_img_url: expect.any(String),
         });
@@ -100,7 +100,7 @@ describe("GET /api/articles", () => {
             title: expect.any(String),
             article_id: expect.any(Number),
             topic: expect.any(String),
-            created_at: expect.any(String),
+            created_at: expect.toBeDateString(),
             votes: expect.any(Number),
             article_img_url: expect.any(String),
             comment_count: expect.any(Number),
@@ -122,7 +122,7 @@ describe("GET /api/articles/:article_id/comments", () => {
           expect(comment).toMatchObject({
             comment_id: expect.any(Number),
             votes: expect.any(Number),
-            created_at: expect.any(String),
+            created_at: expect.toBeDateString(),
             author: expect.any(String),
             body: expect.any(String),
             article_id: 1,
@@ -130,6 +130,16 @@ describe("GET /api/articles/:article_id/comments", () => {
         });
       });
   });
+  test("GET200: Endpoint responds with an empty array when selected article by article ID have no comment.", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body: { allComments } }) => {
+        allComments.forEach((comment) => {
+          expect(comment).toEqual([]);
+          });
+        });
+      });
   test("GET404: Respond with an error when passed ID is valid but non-existent", () => {
     return request(app)
       .get("/api/articles/99/comments")
@@ -164,7 +174,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(postedComment).toMatchObject({
           comment_id: 19,
           votes: expect.any(Number),
-          created_at: expect.any(String),
+          created_at: expect.toBeDateString(),
           author: newComment.username,
           body: newComment.body,
           article_id : 2
