@@ -1,8 +1,15 @@
-const { fetchTopics, fetchArticleById, fetchArticles, fetchCommentsByArticleID } = require("./model");
+const comments = require("./db/data/test-data/comments");
+const {
+  fetchTopics,
+  fetchArticleById,
+  fetchArticles,
+  fetchCommentsByArticleID,
+  createComment,
+} = require("./model");
 
 exports.getTopics = (req, res, next) => {
   fetchTopics().then((topics) => {
-    res.status(200).send({topics});
+    res.status(200).send({ topics });
   });
 };
 
@@ -27,9 +34,21 @@ exports.getArticles = (req, res, next) => {
 exports.getCommentsByArticleID = (req, res, next) => {
   const { article_id } = req.params;
   const { sort_by, order } = req.query;
-  fetchCommentsByArticleID(article_id, sort_by, order).then((comments) => {
-    res.status(200).send({ allComments: comments });
+  fetchCommentsByArticleID(article_id, sort_by, order)
+    .then((comments) => {
+      res.status(200).send({ allComments: comments });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.postComment = (req, res, next) => {
+  const { article_id } = req.params;
+  const newComment = req.body;
+  createComment(article_id, newComment).then((comments) => {
+    res.status(201).send({ postedComment: comments });
   }).catch((err) => {
     next(err);
-  });
+  });;
 };
