@@ -64,11 +64,11 @@
   "POST /api/articles/:article_id/comments":{
     "description":"add a comment for an article (seleted by article ID), accept properties: username and body. Will responds with the posted comment.",
     "queries": [],
-    "acceptProperties":{
+    " exampleRequest":{
       "username" : "rogersop",
       "body":"Isn't that sweet, i guess so"
     },
-    "exampleRequest":{
+    "exampleResponse":{
       "postedComment":[
         {"comment_id":19,
         "votes":22,
@@ -78,6 +78,24 @@
         "article_id":"2"
       }
       ]
+    }
+  },
+  "PATCH /api/articles/:article_id":{
+    "description":"update an article by article_id, accept properties: newVotes (in the form of key pair values, ex: { inc_votes : 1 }, which increase the selected article's vote by 1), and responds with the updated article.",
+    "queries":[],
+    "exampleRequest":{
+      "inc_votes" : 1 
+    },
+    "exampleResponse":{
+      "updatedArticle":[{
+        "article_id":1,
+        "title": "Living in the shadow of a great man",
+        "topic": "mitch",
+        "author": "butter_bridge",
+        "created_at": "2020-07-09T20:11:00.000Z",
+        "votes": 101,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      }]
     }
   }
 }
