@@ -81,7 +81,7 @@ describe("GET /api/articles/:article_id", () => {
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("Invalid ID Type");
+        expect(msg).toBe("Bad Request");
       });
   });
 });
@@ -137,16 +137,16 @@ describe("GET /api/articles/:article_id/comments", () => {
       .then(({ body: { allComments } }) => {
         allComments.forEach((comment) => {
           expect(comment).toEqual([]);
-          });
         });
       });
+  });
   test("GET404: Respond with an error when passed ID is valid but non-existent", () => {
     return request(app)
       .get("/api/articles/99/comments")
       .expect(404)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("Non-existent ID");
+        expect(msg).toBe("Non-existent Article ID");
       });
   });
   test("GET400: Respond with an error when passed an ID that is of the incorrect type", () => {
@@ -155,7 +155,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("Invalid ID Type");
+        expect(msg).toBe("Bad Request");
       });
   });
 });
@@ -177,11 +177,11 @@ describe("POST /api/articles/:article_id/comments", () => {
           created_at: expect.toBeDateString(),
           author: newComment.username,
           body: newComment.body,
-          article_id : 2
+          article_id: 2,
         });
       });
   });
-  test("POST404: Respond with an error when passed ID is valid but non-existent", () => {
+  test("POST404: Respond with an error when passed ID is valid but non-existent. ", () => {
     const newComment = {
       username: "rogersop",
       body: "Isn't that sweet, i guess so",
@@ -206,7 +206,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("Invalid ID Type");
+        expect(msg).toBe("Bad Request");
       });
   });
   test("POST404: Respond with an error when new input comments type is incorrect", () => {
@@ -225,7 +225,7 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
   test("POST400: Respond with an error when incomplete/missing body", () => {
     const newComment = {
-      username: 123
+      username: "rogersop"
     };
     return request(app)
       .post("/api/articles/2/comments")
@@ -234,6 +234,79 @@ describe("POST /api/articles/:article_id/comments", () => {
       .then(({ body }) => {
         const { msg } = body;
         expect(msg).toBe("Incomplete/Missing Body");
+      });
+  });
+});
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("PATCH200: update an article by article_id, and respond with new updated article ", () => {
+    const newVote = {
+      inc_votes: 1,
+    };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(newVote)
+      .expect(200)
+      .then(({ body: { updatedArticle } }) => {
+        expect(updatedArticle).toMatchObject({
+          author: expect.any(String),
+          title: expect.any(String),
+          article_id: expect.any(Number),
+          topic: expect.any(String),
+          created_at: expect.toBeDateString(),
+          votes: 101,
+          article_img_url: expect.any(String)
+        });
+      });
+  });
+  test("PATCH400: Respond with an error when newVote is not in the required obj key pair value form", () => {
+    const newVote = "1";
+    return request(app)
+      .patch("/api/articles/1")
+      .send(newVote)
+      .expect(400)
+      .then(({body}) => {
+        const { msg } = body;
+        expect(msg).toBe("Invalid Form Body");
+      });
+  });
+  test("PATCH404: Respond with an error when passed ID is valid but non-existent.", () => {
+    const newVote = {
+      inc_votes: 1,
+    };
+    return request(app)
+      .patch("/api/articles/99")
+      .send(newVote)
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Non-existent Article ID");
+      });
+  });
+  test("PATCH400: Respond with an error when an input article ID is the incorrect type", () => {
+    const newVote = {
+      inc_votes: 1,
+    };
+    return request(app)
+      .patch("/api/articles/not-a-number")
+      .send(newVote)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
+      });
+  });
+  test("PATCH400: Respond with an error when invalid body", () => {
+    const newVote = {
+      inc_votes: "abc",
+    };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(newVote)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
       });
   });
 });
