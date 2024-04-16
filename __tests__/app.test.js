@@ -239,7 +239,7 @@ describe("POST /api/articles/:article_id/comments", () => {
 });
 
 describe("PATCH /api/articles/:article_id", () => {
-  test("PATCH200: update an article by article_id, ", () => {
+  test("PATCH200: update an article by article_id, and respond with new updated article ", () => {
     const newVote = {
       inc_votes: 1,
     };
