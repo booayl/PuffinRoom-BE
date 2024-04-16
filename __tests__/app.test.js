@@ -225,7 +225,7 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
   test("POST400: Respond with an error when incomplete/missing body", () => {
     const newComment = {
-      username: "rogersop"
+      username: "rogersop",
     };
     return request(app)
       .post("/api/articles/2/comments")
@@ -255,7 +255,7 @@ describe("PATCH /api/articles/:article_id", () => {
           topic: expect.any(String),
           created_at: expect.toBeDateString(),
           votes: 101,
-          article_img_url: expect.any(String)
+          article_img_url: expect.any(String),
         });
       });
   });
@@ -265,7 +265,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .patch("/api/articles/1")
       .send(newVote)
       .expect(400)
-      .then(({body}) => {
+      .then(({ body }) => {
         const { msg } = body;
         expect(msg).toBe("Invalid Form Body");
       });
@@ -303,6 +303,35 @@ describe("PATCH /api/articles/:article_id", () => {
     return request(app)
       .patch("/api/articles/1")
       .send(newVote)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
+      });
+  });
+});
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("DELETE204: delete the given comment by comment_id", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+      });
+  });
+  test("DELETE404: Respond with an error when passed ID is valid but non-existent.", () => {
+    return request(app)
+      .delete("/api/comments/99")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Non-existent Comment ID");
+      });
+  });
+  test.only("DELETE400: Respond with an error when an input comment ID is the incorrect type", () => {
+    return request(app)
+      .delete("/api/comments/not-a-number")
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;
