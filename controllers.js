@@ -8,6 +8,7 @@ const {
   createComment,
   updatedArticle,
   removeComment,
+  fetchUsers
 } = require("./model");
 
 exports.getTopics = (req, res, next) => {
@@ -77,10 +78,16 @@ exports.patchArticle = (req, res, next) => {
 exports.deleteComment = (req, res, next) => {
   const { comment_id } = req.params;
   removeComment(comment_id)
-    .then((result) => {
+    .then(() => {
       res.status(204).send();
     })
     .catch((err) => {
       next(err);
     });
 };
+
+exports.getUsers = (req,res,next)=>{
+    fetchUsers().then((users)=>{
+        res.status(200).send({users})
+    })
+}
