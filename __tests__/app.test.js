@@ -149,3 +149,68 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("POST201: post a comment for an article(seleted by article ID), accept VARCHAR properties: username and body. Will responds with the newly posted comment", () => {
+    const newComment = {
+      username: "rogersop",
+      body: "Isn't that sweet, i guess so",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body: { postedComment } }) => {
+        expect(postedComment).toMatchObject({
+          comment_id: 19,
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+          author: newComment.username,
+          body: newComment.body,
+          article_id : 2
+        });
+      });
+  });
+  test("POST404: Respond with an error when passed ID is valid but non-existent", () => {
+    const newComment = {
+      username: "rogersop",
+      body: "Isn't that sweet, i guess so",
+    };
+    return request(app)
+      .post("/api/articles/99/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Non-existent Article ID / Username");
+      });
+  });
+  test("POST400: Respond with an error when an input article ID is the incorrect type", () => {
+    const newComment = {
+      username: "rogersop",
+      body: "Isn't that sweet, i guess so",
+    };
+    return request(app)
+      .post("/api/articles/not-a-number/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Invalid ID Type");
+      });
+  });
+  test("POST404: Respond with an error when new input comments type is incorrect", () => {
+    const newComment = {
+      username: 123,
+      body: "Isn't that sweet, i guess so",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Non-existent Article ID / Username");
+      });
+  });
+});
