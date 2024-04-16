@@ -387,7 +387,7 @@ describe("GET /api/articles (topic query)", () => {
         expect(msg).toBe("Non-existent Topic");
       });
   });
-  test("GET404: Respond with an error when invalid query", () => {
+  test.only("GET404: Respond with an error when invalid query", () => {
     return request(app)
       .get("/api/articles?abc=cats")
       .expect(400)

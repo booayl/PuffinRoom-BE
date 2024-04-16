@@ -42,12 +42,18 @@ exports.fetchArticles = (sort_by = "created_at", order = "DESC", topic) => {
 };
 
 exports.validateQuery = (queries) => {
-  const validQuery = ["topic"];
-  const invalidQuery = queries.filter((query) => !validQuery.includes(query));
+  return db
+    .query(
+      `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'articles'`
+    )
+    .then(({ rows }) => {
+      const validQuery = rows.flatMap(Object.values);
+      const invalidQuery = queries.filter((query) => !validQuery.includes(query));
 
-  if (invalidQuery.length > 0) {
-    return Promise.reject({ status: 400, msg: "Invalid query" });
-  }
+      if (invalidQuery.length > 0) {
+        return Promise.reject({ status: 400, msg: "Invalid query" });
+      }
+    });
 };
 
 exports.fetchCommentsByArticleID = (
