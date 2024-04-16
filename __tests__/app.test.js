@@ -340,7 +340,7 @@ describe("DELETE /api/comments/:comment_id", () => {
   });
 });
 
-describe("GET /api/users",()=>{
+describe("GET /api/users", () => {
   test("GET200: Endpoint responds with an array of users objects with username, name, avatar_url", () => {
     return request(app)
       .get("/api/users")
@@ -351,9 +351,49 @@ describe("GET /api/users",()=>{
           expect(user).toMatchObject({
             username: expect.any(String),
             name: expect.any(String),
-            avatar_url: expect.any(String)
+            avatar_url: expect.any(String),
           });
         });
       });
   });
-})
+});
+
+describe("GET /api/articles (topic query)", () => {
+  test("GET200: Endpoint accept topic query and responds articles with seleted topics", () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then(({ body: { allArticles } }) => {
+        expect(allArticles.length).toBe(1);
+        allArticles.forEach((article) => {
+          expect(article).toMatchObject({
+            title: expect.any(String),
+            topic: "cats",
+            author: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.toBeDateString(),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(Number),
+          });
+        });
+      });
+  });
+  test("GET404: Respond with an error when passed non-existent topic", () => {
+    return request(app)
+      .get("/api/articles?topic=abc")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Non-existent Topic");
+      });
+  });
+  test("GET404: Respond with an error when invalid query", () => {
+    return request(app)
+      .get("/api/articles?abc=cats")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Invalid query");
+      });
+  });
+});

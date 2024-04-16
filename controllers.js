@@ -8,7 +8,8 @@ const {
   createComment,
   updatedArticle,
   removeComment,
-  fetchUsers
+  fetchUsers,
+  validateQuery,
 } = require("./model");
 
 exports.getTopics = (req, res, next) => {
@@ -29,10 +30,16 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  const { sort_by, order } = req.query;
-  fetchArticles(sort_by, order).then((articles) => {
-    res.status(200).send({ allArticles: articles });
-  });
+  const { sort_by, order, topic } = req.query;
+  const queries = Object.keys(req.query);
+
+  Promise.all([fetchArticles(sort_by, order, topic), validateQuery(queries)])
+    .then(([articles]) => {
+      res.status(200).send({ allArticles: articles });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 exports.getCommentsByArticleID = (req, res, next) => {
@@ -86,8 +93,8 @@ exports.deleteComment = (req, res, next) => {
     });
 };
 
-exports.getUsers = (req,res,next)=>{
-    fetchUsers().then((users)=>{
-        res.status(200).send({users})
-    })
-}
+exports.getUsers = (req, res, next) => {
+  fetchUsers().then((users) => {
+    res.status(200).send({ users });
+  });
+};
