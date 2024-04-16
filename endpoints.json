@@ -68,7 +68,7 @@
       "username" : "rogersop",
       "body":"Isn't that sweet, i guess so"
     },
-    "exampleResponse":{
+    "exampleRequest":{
       "postedComment":[
         {"comment_id":19,
         "votes":22,

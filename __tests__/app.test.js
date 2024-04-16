@@ -213,4 +213,17 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(msg).toBe("Non-existent Article ID / Username");
       });
   });
+  test("POST400: Respond with an error when incomplete/missing body", () => {
+    const newComment = {
+      username: 123
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Incomplete/Missing Body");
+      });
+  });
 });
