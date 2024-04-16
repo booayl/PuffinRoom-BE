@@ -7,6 +7,7 @@ const {
   checkArticleExists,
   createComment,
   updatedArticle,
+  removeComment,
 } = require("./model");
 
 exports.getTopics = (req, res, next) => {
@@ -64,9 +65,22 @@ exports.postComment = (req, res, next) => {
 exports.patchArticle = (req, res, next) => {
   const { article_id } = req.params;
   const { inc_votes } = req.body;
-  updatedArticle(article_id, inc_votes).then((article) => {
-    res.status(200).send({ updatedArticle: article });
-  }).catch((err) => {
-    next(err);
-  });;
+  updatedArticle(article_id, inc_votes)
+    .then((article) => {
+      res.status(200).send({ updatedArticle: article });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.deleteComment = (req, res, next) => {
+  const { comment_id } = req.params;
+  removeComment(comment_id)
+    .then((result) => {
+      res.status(204).send(result);
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
