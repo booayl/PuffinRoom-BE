@@ -66,7 +66,7 @@ describe("GET /api/articles/:article_id", () => {
         });
       });
   });
-  test("GET404: Non-existent ID", () => {
+  test("GET404: Respond with an error when passed ID is valid but non-existent", () => {
     return request(app)
       .get("/api/articles/99")
       .expect(404)
@@ -75,7 +75,7 @@ describe("GET /api/articles/:article_id", () => {
         expect(msg).toBe("Non-existent ID");
       });
   });
-  test("GET400: Invalid Input Type", () => {
+  test("GET400: Respond with an error when passed an ID that is of the incorrect type", () => {
     return request(app)
       .get("/api/articles/not-a-number")
       .expect(400)
@@ -130,7 +130,7 @@ describe("GET /api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("GET404: Invalid ID Input", () => {
+  test("GET404: Respond with an error when passed ID is valid but non-existent", () => {
     return request(app)
       .get("/api/articles/99/comments")
       .expect(404)
@@ -139,7 +139,7 @@ describe("GET /api/articles/:article_id/comments", () => {
         expect(msg).toBe("Non-existent ID");
       });
   });
-  test("GET400: Invalid Input Type", () => {
+  test("GET400: Respond with an error when passed an ID that is of the incorrect type", () => {
     return request(app)
       .get("/api/articles/not-a-number/comments")
       .expect(400)

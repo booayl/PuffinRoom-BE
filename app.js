@@ -22,8 +22,9 @@ app.all("*", (req, res) => {
   res.status(404).send("Invalid Endpoint");
 });
 
-//Invalid ID Input
+
 app.use((err, req, res, next) => {
+    //Non-existent ID
   if (err.status && err.msg) {
     res.status(err.status).send({ msg: err.msg });
   }
