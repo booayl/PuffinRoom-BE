@@ -398,7 +398,7 @@ describe("GET /api/articles (Add Feature: topic query)", () => {
   });
 });
 
-describe("GET /api/articles/:article_id (Add Feature: comment_count)",()=>{
+describe("GET /api/articles/:article_id (Add Feature: comment_count)", () => {
   test("GET200: Endpoint responds with selected article by its ID and including it's total count of comment(comment_count)", () => {
     return request(app)
       .get("/api/articles/10")
@@ -413,8 +413,57 @@ describe("GET /api/articles/:article_id (Add Feature: comment_count)",()=>{
           created_at: expect.toBeDateString(),
           votes: expect.any(Number),
           article_img_url: expect.any(String),
-          comment_count: expect.any(Number)
+          comment_count: expect.any(Number),
         });
       });
   });
-})
+});
+
+describe("GET /api/articles (Add Feature: sorting queries)", () => {
+  test("GET200: Endpoint now accept queries for sort_by (any valid column from articles) and order (asc or desc)", () => {
+    return request(app)
+      .get("/api/articles?sort_by=comment_count&order=asc")
+      .expect(200)
+      .then(({ body: { allArticles } }) => {
+        expect(allArticles).toBeSortedBy("comment_count", { ascending: true });
+        allArticles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.toBeDateString(),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(Number),
+          });
+        });
+      });
+  });
+  test("GET200: Sort_by and order queries are optional, if not exsist, default is sort_by = created_at, order = descending.", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author")
+      .expect(200)
+      .then(({ body: { allArticles } }) => {
+        expect(allArticles).toBeSortedBy("author", { descending: true });
+      });
+  });
+  test("GET400: Respond with an error when passed in invalid / non-existent sort_by queries", () => {
+    return request(app)
+      .get("/api/articles?sort_by=abc")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Invalid query");
+      });
+  });
+  test("GET400: Respond with an error when passed in invalid / non-existent order queries", () => {
+    return request(app)
+      .get("/api/articles?order=abc")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Invalid query");
+      });
+  });
+});

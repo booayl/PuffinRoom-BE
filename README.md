@@ -20,17 +20,7 @@ https://github.com/booayl/backend-project
 npm install
 ```
 
-3. Seed Local Database
-```bash
-npm run setup-dbs
-```
-
-4. To Run tests
-```bash
-npm test
-```
-
-5. Create the .env files for development:
+3. Create the .env files for development:
 
 At the top level of your folder, create a new file name ```.env.development```
 
@@ -39,13 +29,23 @@ With the content:
 PGDATABASE=nc_news_dev
 ```
 
-6. Create the .env files for test:
+4. Create the .env files for test:
 
 Then, create another file name ```.env.test```
 
 With the content: 
 ```bash
 PGDATABASE=nc_news_test
+```
+
+5. Seed Local Database
+```bash
+npm run seed
+```
+
+6. To Run tests
+```bash
+npm test
 ```
 
 ## Minimum Required Versions 
@@ -55,7 +55,7 @@ Postgres  ```14.11```
 
 
 ## Usage
-For all available endpoints, run endpoint for information:
+For all available endpoints, run this endpoint for more information:
 ```bash
-https://news-app-u364.onrender.com/api
+GET https://news-app-u364.onrender.com/api
 ```

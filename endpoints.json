@@ -15,7 +15,7 @@
     "exampleResponse": {
       "articles": [
         {
-          "article_id":1,
+          "article_id": 1,
           "title": "Living in the shadow of a great man",
           "topic": "mitch",
           "author": "butter_bridge",
@@ -23,18 +23,31 @@
           "created_at": "2020-07-09T20:11:00.000Z",
           "votes": 100,
           "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-          "comment_count" : 2
+          "comment_count": 2
         }
       ]
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "description": [
+      "Serves an array of all articles, default sorted by date in descending order, accepting queries below:", 
+      {
+        "topic": "will respond with the articles by the topic value specified in the query.",
+        "sort_by": "will respond with the articles sort by any valid column from articles.",
+        "order": "will respond in selected (ascending/descending) order"
+      }
+    ],
+    "queries": ["topic", "sort_by", "order"],
+    "exampleQuery": [
+      "GET /api/articles?topic=cats",
+      "GET /api/articles?sort_by=comment_count&order=asc",
+      "GET /api/articles?sort_by=author",
+      "GET /api/article?order=asc"
+    ],
     "exampleResponse": {
       "articles": [
         {
-          "article_id":1,
+          "article_id": 1,
           "title": "Living in the shadow of a great man",
           "topic": "mitch",
           "author": "butter_bridge",
@@ -46,90 +59,116 @@
       ]
     }
   },
-   "GET /api/articles/:article_id/comments":{
-    "description":"responds with an array of comments objects from selected article by article ID. Comments served with the most recent comments first.",
-    "queries":["sort_by", "order"],
-    "exampleResponse":{
-      "comments":[
+  "GET /api/articles/:article_id/comments": {
+    "description": "responds with an array of comments objects from selected article by article ID. Comments served with the most recent comments first.",
+    "queries": ["sort_by", "order"],
+    "exampleResponse": {
+      "comments": [
         {
-          "comment_id":1,
-          "votes":16,
-          "created_at":"2020-07-09T20:11:00.000Z",
-          "author":"butter_bridge",
-          "body":" Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
-          "article_id":"1"
+          "comment_id": 1,
+          "votes": 16,
+          "created_at": "2020-07-09T20:11:00.000Z",
+          "author": "butter_bridge",
+          "body": " Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          "article_id": "1"
         }
       ]
     }
   },
-  "POST /api/articles/:article_id/comments":{
-    "description":"add a comment for an article (seleted by article ID), accept properties: username and body. Will responds with the posted comment.",
+  "POST /api/articles/:article_id/comments": {
+    "description": "add a comment for an article (seleted by article ID), accept properties: username and body. Will responds with the posted comment.",
     "queries": [],
-    " exampleRequest":{
-      "username" : "rogersop",
-      "body":"Isn't that sweet, i guess so"
+    " exampleRequest": {
+      "username": "rogersop",
+      "body": "Isn't that sweet, i guess so"
     },
-    "exampleResponse":{
-      "postedComment":[
-        {"comment_id":19,
-        "votes":22,
-        "created_at":"2020-07-09T20:11:00.000Z",
-        "author":"rogersop",
-        "body":"Isn't that sweet, i guess so",
-        "article_id":"2"
-      }
+    "exampleResponse": {
+      "postedComment": [
+        {
+          "comment_id": 19,
+          "votes": 22,
+          "created_at": "2020-07-09T20:11:00.000Z",
+          "author": "rogersop",
+          "body": "Isn't that sweet, i guess so",
+          "article_id": "2"
+        }
       ]
     }
   },
-  "PATCH /api/articles/:article_id":{
-    "description":"update an article by article_id, accept properties: newVotes (in the form of key pair values, ex: { inc_votes : 1 }, which increase the selected article's vote by 1), and responds with the updated article.",
-    "queries":[],
-    "exampleRequest":{
-      "inc_votes" : 1 
+  "PATCH /api/articles/:article_id": {
+    "description": "update an article by article_id, accept properties: newVotes (in the form of key pair values, ex: { inc_votes : 1 }, which increase the selected article's vote by 1), and responds with the updated article.",
+    "queries": [],
+    "exampleRequest": {
+      "inc_votes": 1
     },
-    "exampleResponse":{
-      "updatedArticle":[{
-        "article_id":1,
-        "title": "Living in the shadow of a great man",
-        "topic": "mitch",
-        "author": "butter_bridge",
-        "created_at": "2020-07-09T20:11:00.000Z",
-        "votes": 101,
-        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-      }]
+    "exampleResponse": {
+      "updatedArticle": [
+        {
+          "article_id": 1,
+          "title": "Living in the shadow of a great man",
+          "topic": "mitch",
+          "author": "butter_bridge",
+          "created_at": "2020-07-09T20:11:00.000Z",
+          "votes": 101,
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        }
+      ]
     }
   },
-  "DELETE /api/comments/:comment_id":{
-    "description":"delete the given comment by comment_id",
-    "queries":[],
-    "exampleResponse":"status 204 and no content"
+  "DELETE /api/comments/:comment_id": {
+    "description": "delete the given comment by comment_id",
+    "queries": [],
+    "exampleResponse": "status 204 and no content"
   },
-  "GET /api/users":{
-    "description":"responds with all users, which are an array of objects with: username, name, avatar_url",
-    "queries":[],
-    "exampleResponse":{
-      "users":[{
-        "username": "butter_bridge",
-        "name":"jonny",
-        "avatar_url":"https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
-      }]
+  "GET /api/users": {
+    "description": "responds with all users, which are an array of objects with: username, name, avatar_url",
+    "queries": [],
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "butter_bridge",
+          "name": "jonny",
+          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        }
+      ]
     }
   },
-  "GET /api/articles?topic=(query)":{
-    "description":"endpoint accept topic query, will respond with the articles by the topic value specified in the query",
-    "queries":["topic"],
-    "exampleQuery" : "GET /api/articles?topic=cats",
-    "exampleRespone":{
-      "articles":[{
-        "article_id": 5,
-        "title": "UNCOVERED: catspiracy to bring down democracy",
-        "topic": "cats",
-        "author": "rogersop",
-        "body":"Bastet walks amongst us, and the cats are taking arms!",
-        "votes":0,
-        "article_img_url":"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-        "comment_count" : 2
-      }]
+  "GET /api/articles?topic=(query)": {
+    "description": "endpoint accept topic query, will respond with the articles by the topic value specified in the query",
+    "queries": ["topic"],
+    "exampleQuery": "GET /api/articles?topic=cats",
+    "exampleRespone": {
+      "articles": [
+        {
+          "article_id": 5,
+          "title": "UNCOVERED: catspiracy to bring down democracy",
+          "topic": "cats",
+          "author": "rogersop",
+          "body": "Bastet walks amongst us, and the cats are taking arms!",
+          "votes": 0,
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          "comment_count": 2
+        }
+      ]
+    }
+  },
+  "GET /api/articles?sort_by=(any existing column)&order=(asc/desc)": {
+    "description": "endpoint accept sort_by and order query, will respond with articles in ",
+    "queries": ["topic"],
+    "exampleQuery": "GET /api/articles?topic=cats",
+    "exampleRespone": {
+      "articles": [
+        {
+          "article_id": 5,
+          "title": "UNCOVERED: catspiracy to bring down democracy",
+          "topic": "cats",
+          "author": "rogersop",
+          "body": "Bastet walks amongst us, and the cats are taking arms!",
+          "votes": 0,
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          "comment_count": 2
+        }
+      ]
     }
   }
 }
