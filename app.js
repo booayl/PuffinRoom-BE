@@ -12,7 +12,7 @@ const {
   postComment,
   patchArticle,
   deleteComment,
-  getUsers
+  getUsers,
 } = require("./controllers");
 
 //Respond a list of all available endpoints from endpoint.json
@@ -29,9 +29,9 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleID);
 app.post("/api/articles/:article_id/comments", postComment);
 app.patch("/api/articles/:article_id", patchArticle);
 
-app.delete("/api/comments/:comment_id",deleteComment)
+app.delete("/api/comments/:comment_id", deleteComment);
 
-app.get("/api/users",getUsers)
+app.get("/api/users", getUsers);
 
 //Error Handling Middleware
 app.all("*", (req, res) => {
@@ -52,7 +52,7 @@ app.use((err, req, res, next) => {
   }
 
   if (err.code === "23503") {
-    res.status(404).send({ msg: "Non-existent Article ID / Username" });
+    res.status(404).send({ msg: "Not Found" });
   }
 
   if (err.code === "23502") {
