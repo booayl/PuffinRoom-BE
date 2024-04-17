@@ -10,7 +10,7 @@
     }
   },
   "GET /api/articles/:article_id": {
-    "description": "serves selected article by its id",
+    "description": "serves selected article by its id, and respond include total comment count of the selected article",
     "queries": [],
     "exampleResponse": {
       "articles": [
@@ -22,7 +22,8 @@
           "body": "Text from the article..",
           "created_at": "2020-07-09T20:11:00.000Z",
           "votes": 100,
-          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          "comment_count" : 2
         }
       ]
     }
@@ -119,22 +120,6 @@
     "queries":["topic"],
     "exampleQuery" : "GET /api/articles?topic=cats",
     "exampleRespone":{
-      "articles":[{
-        "article_id": 5,
-        "title": "UNCOVERED: catspiracy to bring down democracy",
-        "topic": "cats",
-        "author": "rogersop",
-        "body":"Bastet walks amongst us, and the cats are taking arms!",
-        "votes":0,
-        "article_img_url":"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-        "comment_count" : 2
-      }]
-    }
-  },
-  "GET /api/articles/:article_id (comment_count)":{
-    "description": "Added New Feature: An article response object should also now include comment_count",
-    "queries":["sort_by", "order"],
-    "exampleResponse":{
       "articles":[{
         "article_id": 5,
         "title": "UNCOVERED: catspiracy to bring down democracy",
