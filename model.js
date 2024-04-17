@@ -25,7 +25,14 @@ exports.fetchArticleById = (article_id) => {
     });
 };
 
-exports.fetchArticles = (sort_by = "created_at", order = "DESC", topic) => {
+exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
+  const validSortBys = ["created_at","votes","article_id","author","body","article_img_url","title","topic","comment_count"]
+  const validOrder = ["desc","asc"]
+
+  if (!validSortBys.includes(sort_by) || !validOrder.includes(order)) {
+    return Promise.reject({ status: 400, msg: "Invalid query" });
+  }
+
   let sqlQueryString = `SELECT articles.*,
     COUNT(comments.article_id)::INT AS comment_count
     FROM comments
@@ -39,7 +46,7 @@ exports.fetchArticles = (sort_by = "created_at", order = "DESC", topic) => {
     topicValue.push(topic);
   }
 
-  sqlQueryString += `GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
+  sqlQueryString += `GROUP BY articles.article_id ORDER BY ${sort_by} ${order.toUpperCase()}`
 
   return db.query(sqlQueryString, topicValue).then(({ rows }) => {
     if (rows.length === 0) {
@@ -55,7 +62,9 @@ exports.validateQuery = (queries) => {
       `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = N'articles'`
     )
     .then(({ rows }) => {
-      const validQuery = rows.flatMap(Object.values);
+      let validQuery = rows.flatMap(Object.values);
+      validQuery += [,'sort_by','order']
+
       const invalidQuery = queries.filter((query) => !validQuery.includes(query));
 
       if (invalidQuery.length > 0) {
