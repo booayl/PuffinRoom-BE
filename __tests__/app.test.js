@@ -192,7 +192,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(404)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("Non-existent Article ID / Username");
+        expect(msg).toBe("Not Found");
       });
   });
   test("POST400: Respond with an error when an input article ID is the incorrect type", () => {
@@ -220,7 +220,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(404)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("Non-existent Article ID / Username");
+        expect(msg).toBe("Not Found");
       });
   });
   test("POST400: Respond with an error when incomplete/missing body", () => {
@@ -387,7 +387,7 @@ describe("GET /api/articles (topic query)", () => {
         expect(msg).toBe("Non-existent Topic");
       });
   });
-  test.only("GET404: Respond with an error when invalid query", () => {
+  test("GET404: Respond with an error when invalid query", () => {
     return request(app)
       .get("/api/articles?abc=cats")
       .expect(400)
