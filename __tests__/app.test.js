@@ -358,7 +358,7 @@ describe("GET /api/users", () => {
   });
 });
 
-describe("GET /api/articles (topic query)", () => {
+describe("GET /api/articles (Add Feature: topic query)", () => {
   test("GET200: Endpoint accept topic query and responds articles with seleted topics", () => {
     return request(app)
       .get("/api/articles?topic=cats")
@@ -387,7 +387,7 @@ describe("GET /api/articles (topic query)", () => {
         expect(msg).toBe("Non-existent Topic");
       });
   });
-  test("GET404: Respond with an error when invalid query", () => {
+  test("GET400: Respond with an error when invalid query", () => {
     return request(app)
       .get("/api/articles?abc=cats")
       .expect(400)
@@ -397,3 +397,24 @@ describe("GET /api/articles (topic query)", () => {
       });
   });
 });
+
+describe("GET /api/articles/:article_id (Add Feature: comment_count)",()=>{
+  test("GET200: Endpoint responds with selected article by its ID and including it's total count of comment(comment_count)", () => {
+    return request(app)
+      .get("/api/articles/10")
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({
+          author: expect.any(String),
+          title: expect.any(String),
+          article_id: 10,
+          body: expect.any(String),
+          topic: expect.any(String),
+          created_at: expect.toBeDateString(),
+          votes: expect.any(Number),
+          article_img_url: expect.any(String),
+          comment_count: expect.any(Number)
+        });
+      });
+  });
+})

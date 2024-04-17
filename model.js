@@ -7,8 +7,16 @@ exports.fetchTopics = () => {
 };
 
 exports.fetchArticleById = (article_id) => {
+    let sqlQueryString = `SELECT articles.*,
+    COUNT(comments.article_id)::INT AS comment_count
+    FROM comments
+    RIGHT JOIN articles
+    ON articles.article_id = comments.article_id
+    WHERE articles.article_id = $1
+    GROUP BY articles.article_id`;
+
   return db
-    .query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
+    .query(sqlQueryString, [article_id])
     .then(({ rows }) => {
       if (rows.length === 0) {
         return Promise.reject({ status: 404, msg: "Non-existent ID" });
