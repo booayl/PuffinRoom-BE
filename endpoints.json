@@ -160,5 +160,31 @@
         }
       ]
     }
+  },
+  "POST /api/articles":{
+    "description": "adds a new article, will responds with the newly added article. Article_img_url will default if not provided.",
+    "queries": [],
+    " exampleRequest": {
+      "author": "rogersop",
+      "title": "Which is your favourite Taylor Swift boyfriend",
+      "body": "Joe, I mean have you seen the easter eggs for The Tortured Poets Department? ",
+      "topic" : "cats",
+      "article_img_url" : "https://media.tenor.com/K-4KulpZoNUAAAAM/yes-taylor-swift.gif"
+    },
+    "exampleResponse": {
+      "postedArticle": [
+        {
+          "article_id": "2",
+          "author": "rogersop",
+          "title": "Which is your favourite Taylor Swift boyfriend",
+          "body": "Joe, I mean have you seen the easter eggs for The Tortured Poets Department? ",
+          "topic" : "cats",
+          "article_img_url" : "https://media.tenor.com/K-4KulpZoNUAAAAM/yes-taylor-swift.gif",
+          "votes": 22,
+          "created_at": "2020-07-09T20:11:00.000Z",
+          "comment_count" : 2
+        }
+      ]
+    }
   }
 }

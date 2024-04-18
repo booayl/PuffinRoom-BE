@@ -563,3 +563,111 @@ describe("PATCH /api/comments/:comment_id", () => {
       });
   });
 });
+
+describe("POST /api/articles", () => {
+  test("POST201: adds a new article, will responds with the newly added article.", () => {
+    const newPost = {
+      author: "rogersop",
+      title: "Which is your favourite Taylor Swift boyfriend",
+      body: "Joe, I mean have you seen the easter eggs for The Tortured Poets Department? ",
+      topic : "cats",
+      article_img_url : "https://media.tenor.com/K-4KulpZoNUAAAAM/yes-taylor-swift.gif"
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newPost)
+      .expect(201)
+      .then(({ body: { newArticle } }) => {
+        expect(newArticle).toMatchObject({
+          article_id: expect.any(Number),
+          votes: expect.any(Number),
+          created_at: expect.toBeDateString(),
+          author: newPost.author,
+          body: newPost.body,
+          title: newPost.title,
+          topic: newPost.topic,
+          article_img_url: newPost.article_img_url,
+        });
+      });  
+  });
+  test("POST201: Responds with the newly added article includes comment_count", () => {
+    const newPost = {
+      author: "rogersop",
+      title: "Which is your favourite Taylor Swift boyfriend",
+      body: "Joe, I mean have you seen the easter eggs for The Tortured Poets Department? ",
+      topic : "cats",
+      article_img_url : "https://media.tenor.com/K-4KulpZoNUAAAAM/yes-taylor-swift.gif"
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newPost)
+      .expect(201)
+      .then(({ body: { newArticle } }) => {
+        expect(newArticle).toMatchObject({
+          article_id: expect.any(Number),
+          votes: expect.any(Number),
+          created_at: expect.toBeDateString(),
+          author: newPost.author,
+          body: newPost.body,
+          title: newPost.title,
+          topic: newPost.topic,
+          article_img_url: newPost.article_img_url,
+          comment_count: expect.any(Number)
+        });
+      });  
+  });
+  test("POST201: will default article_img_url if not provided", () => {
+    const newPost = {
+      author: "rogersop",
+      title: "Which is your favourite Taylor Swift boyfriend",
+      body: "Joe, I mean have you seen the easter eggs for The Tortured Poets Department? ",
+      topic : "cats",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newPost)
+      .expect(201)
+      .then(({ body: { newArticle } }) => {
+        expect(newArticle).toMatchObject({
+          article_id: expect.any(Number),
+          votes: expect.any(Number),
+          created_at: expect.toBeDateString(),
+          author: newPost.author,
+          body: newPost.body,
+          title: newPost.title,
+          topic: newPost.topic,
+          article_img_url: "https://grin2b.com/wp-content/uploads/2017/01/Grin2B_icon_NEWS.png",
+          comment_count: expect.any(Number)
+        });
+      });  
+  });
+  test("POST404: Respond with an error when new foreign key (author & topic) is invalid or non-existence", () => {
+    const newPost = {
+      author: 123,
+      title: "Which is your favourite Taylor Swift boyfriend",
+      body: "Joe, I mean have you seen the easter eggs for The Tortured Poets Department? ",
+      topic : "abc",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newPost)
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Not Found");
+      });
+  });
+  test("POST400: Respond with an error when incomplete/missing body", () => {
+    const newComment = {
+      author: "rogersop",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Incomplete/Missing Body");
+      });
+  });
+});
