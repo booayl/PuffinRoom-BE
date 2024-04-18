@@ -16,7 +16,7 @@ apiRouter.get("/", (req, res, next) => {
 });
 
 // Catch-all middleware for handling invalid endpoints
-apiRouter.all("*", (req, res) => {
+apiRouter.all("/*", (req, res) => {
     res.status(404).send("Invalid Endpoint");
     next()
 });

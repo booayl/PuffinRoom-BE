@@ -10,7 +10,8 @@ const {
   removeComment,
   fetchUsers,
   validateQuery,
-  retrieveUser
+  retrieveUser,
+  updateComment,
 } = require("./model");
 
 exports.getTopics = (req, res, next) => {
@@ -100,11 +101,25 @@ exports.getUsers = (req, res, next) => {
   });
 };
 
-exports.selectUser = (req,res,next)=>{
-  const {username} = req.params
-  retrieveUser(username).then((user)=>{
-    res.status(200).send({user})
-  }).catch((err) => {
-    next(err);
-  });
-}
+exports.selectUser = (req, res, next) => {
+  const { username } = req.params;
+  retrieveUser(username)
+    .then((user) => {
+      res.status(200).send({ user });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.patchComment = (req, res, next) => {
+  const { comment_id } = req.params;
+  const { inc_votes } = req.body;
+  updateComment(comment_id, inc_votes)
+    .then((comment) => {
+      res.status(200).send({ updatedComment: comment });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};

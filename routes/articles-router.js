@@ -8,12 +8,14 @@ const {
     patchArticle
   } = require("../controllers");
   
-articleRouter.get('/:article_id', getArticleById);
 articleRouter.get('/', getArticles);
 
+articleRouter.route('/:article_id')
+.get(getArticleById)
+.patch(patchArticle);
 
-articleRouter.get("/:article_id/comments", getCommentsByArticleID);
-articleRouter.post("/:article_id/comments", postComment);
-articleRouter.patch("/:article_id", patchArticle);
-  
+articleRouter.route('/:article_id/comments')
+.get(getCommentsByArticleID)
+.post(postComment);
+
 module.exports = articleRouter;

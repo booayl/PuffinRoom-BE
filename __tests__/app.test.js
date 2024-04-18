@@ -491,3 +491,75 @@ describe("GET /api/users/:username", () => {
       });
   });
 });
+
+describe("PATCH /api/comments/:comment_id", () => {
+  test("PATCH200: update the votes on the selected comment by it's ID, and respond with new updated comment ", () => {
+    const newVote = {
+      inc_votes: 1,
+    };
+    return request(app)
+      .patch("/api/comments/2")
+      .send(newVote)
+      .expect(200)
+      .then(({ body: { updatedComment } }) => {
+        expect(updatedComment).toMatchObject({
+          comment_id: 2,
+          body: expect.any(String),
+          article_id: expect.any(Number),
+          author: expect.any(String),
+          created_at: expect.toBeDateString(),
+          votes: 15,
+        });
+      });
+  });
+  test("PATCH400: Respond with an error when newVote is not in the required obj key pair value form", () => {
+    const newVote = "1";
+    return request(app)
+      .patch("/api/comments/2")
+      .send(newVote)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Invalid Form Body");
+      });
+  });
+  test("PATCH404: Respond with an error when passed ID is valid but non-existent.", () => {
+    const newVote = {
+      inc_votes: 1,
+    };
+    return request(app)
+      .patch("/api/comments/123")
+      .send(newVote)
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Non-existent Comment ID");
+      });
+  });
+  test("PATCH400: Respond with an error when an input comment ID is the incorrect type", () => {
+    const newVote = {
+      inc_votes: 1,
+    };
+    return request(app)
+      .patch("/api/comments/not-a-number")
+      .send(newVote)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
+      });
+  });
+  test("PATCH400: Respond with an error when invalid body", () => {
+    const newVote = {
+      inc_votes: "abc",
+    };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(newVote)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
+      });
+  });
+});
