@@ -133,42 +133,13 @@
       ]
     }
   },
-  "GET /api/articles?topic=(query)": {
-    "description": "endpoint accept topic query, will respond with the articles by the topic value specified in the query",
-    "queries": ["topic"],
-    "exampleQuery": "GET /api/articles?topic=cats",
-    "exampleRespone": {
-      "articles": [
-        {
-          "article_id": 5,
-          "title": "UNCOVERED: catspiracy to bring down democracy",
-          "topic": "cats",
-          "author": "rogersop",
-          "body": "Bastet walks amongst us, and the cats are taking arms!",
-          "votes": 0,
-          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-          "comment_count": 2
-        }
-      ]
-    }
-  },
-  "GET /api/articles?sort_by=(any existing column)&order=(asc/desc)": {
-    "description": "endpoint accept sort_by and order query, will respond with articles in ",
-    "queries": ["topic"],
-    "exampleQuery": "GET /api/articles?topic=cats",
-    "exampleRespone": {
-      "articles": [
-        {
-          "article_id": 5,
-          "title": "UNCOVERED: catspiracy to bring down democracy",
-          "topic": "cats",
-          "author": "rogersop",
-          "body": "Bastet walks amongst us, and the cats are taking arms!",
-          "votes": 0,
-          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-          "comment_count": 2
-        }
-      ]
+  "GET /api/users/:username": {
+    "description": "responds user by username with an array of users objects with username, name, avatar_url",
+    "queries": [],
+    "exampleResponse": {
+          "username": "butter_bridge",
+          "name": "jonny",
+          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
     }
   }
 }

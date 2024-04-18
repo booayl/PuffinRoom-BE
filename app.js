@@ -1,37 +1,11 @@
 const express = require("express");
 const app = express();
-const endpoints = require("./endpoints.json");
+const apiRouter = require('./routes/api-router');
 
 app.use(express.json());
 
-const {
-  getTopics,
-  getArticleById,
-  getArticles,
-  getCommentsByArticleID,
-  postComment,
-  patchArticle,
-  deleteComment,
-  getUsers,
-} = require("./controllers");
-
 //Respond a list of all available endpoints from endpoint.json
-app.get("/api", (req, res, next) => {
-  res.status(200).send({ endpoints });
-});
-
-app.get("/api/topics", getTopics);
-
-app.get("/api/articles/:article_id", getArticleById);
-app.get("/api/articles", getArticles);
-app.get("/api/articles/:article_id/comments", getCommentsByArticleID);
-
-app.post("/api/articles/:article_id/comments", postComment);
-app.patch("/api/articles/:article_id", patchArticle);
-
-app.delete("/api/comments/:comment_id", deleteComment);
-
-app.get("/api/users", getUsers);
+app.use("/api", apiRouter);
 
 //Error Handling Middleware
 app.all("*", (req, res) => {

@@ -467,3 +467,27 @@ describe("GET /api/articles (Add Feature: sorting queries)", () => {
       });
   });
 });
+
+describe("GET /api/users/:username", () => {
+  test("GET200: Endpoint responds user by username with an array of users objects with username, name, avatar_url", () => {
+    return request(app)
+      .get("/api/users/butter_bridge")
+      .expect(200)
+      .then(({ body: { user } }) => {
+        expect(user).toMatchObject({
+          username: expect.any(String),
+          name: expect.any(String),
+          avatar_url: expect.any(String),
+        });
+      });
+  });
+  test("GET404: Respond with an error when passed in a non-existent or invalid username", () => {
+    return request(app)
+      .get("/api/users/abc")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Non-existent Username");
+      });
+  });
+});

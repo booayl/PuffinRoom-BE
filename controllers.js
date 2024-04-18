@@ -10,6 +10,7 @@ const {
   removeComment,
   fetchUsers,
   validateQuery,
+  retrieveUser
 } = require("./model");
 
 exports.getTopics = (req, res, next) => {
@@ -98,3 +99,12 @@ exports.getUsers = (req, res, next) => {
     res.status(200).send({ users });
   });
 };
+
+exports.selectUser = (req,res,next)=>{
+  const {username} = req.params
+  retrieveUser(username).then((user)=>{
+    res.status(200).send({user})
+  }).catch((err) => {
+    next(err);
+  });
+}
