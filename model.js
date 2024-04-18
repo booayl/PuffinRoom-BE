@@ -7,7 +7,7 @@ exports.fetchTopics = () => {
 };
 
 exports.fetchArticleById = (article_id) => {
-    let sqlQueryString = `SELECT articles.*,
+  let sqlQueryString = `SELECT articles.*,
     COUNT(comments.article_id)::INT AS comment_count
     FROM comments
     RIGHT JOIN articles
@@ -15,19 +15,27 @@ exports.fetchArticleById = (article_id) => {
     WHERE articles.article_id = $1
     GROUP BY articles.article_id`;
 
-  return db
-    .query(sqlQueryString, [article_id])
-    .then(({ rows }) => {
-      if (rows.length === 0) {
-        return Promise.reject({ status: 404, msg: "Non-existent ID" });
-      }
-      return rows[0];
-    });
+  return db.query(sqlQueryString, [article_id]).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({ status: 404, msg: "Non-existent ID" });
+    }
+    return rows[0];
+  });
 };
 
 exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
-  const validSortBys = ["created_at","votes","article_id","author","body","article_img_url","title","topic","comment_count"]
-  const validOrder = ["desc","asc"]
+  const validSortBys = [
+    "created_at",
+    "votes",
+    "article_id",
+    "author",
+    "body",
+    "article_img_url",
+    "title",
+    "topic",
+    "comment_count",
+  ];
+  const validOrder = ["desc", "asc"];
 
   if (!validSortBys.includes(sort_by) || !validOrder.includes(order)) {
     return Promise.reject({ status: 400, msg: "Invalid query" });
@@ -46,7 +54,7 @@ exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
     topicValue.push(topic);
   }
 
-  sqlQueryString += `GROUP BY articles.article_id ORDER BY ${sort_by} ${order.toUpperCase()}`
+  sqlQueryString += `GROUP BY articles.article_id ORDER BY ${sort_by} ${order.toUpperCase()}`;
 
   return db.query(sqlQueryString, topicValue).then(({ rows }) => {
     if (rows.length === 0) {
@@ -63,9 +71,11 @@ exports.validateQuery = (queries) => {
     )
     .then(({ rows }) => {
       let validQuery = rows.flatMap(Object.values);
-      validQuery += [,'sort_by','order']
+      validQuery += [, "sort_by", "order"];
 
-      const invalidQuery = queries.filter((query) => !validQuery.includes(query));
+      const invalidQuery = queries.filter(
+        (query) => !validQuery.includes(query)
+      );
 
       if (invalidQuery.length > 0) {
         return Promise.reject({ status: 400, msg: "Invalid query" });
@@ -146,26 +156,67 @@ exports.fetchUsers = () => {
   });
 };
 
-exports.retrieveUser = (username) =>{
-  return db.query(`SELECT * FROM users WHERE username = $1;`,[username]).then(({rows})=>{
-    if (rows.length === 0) {
-      return Promise.reject({ status: 404, msg: "Non-existent Username" });
-    }
-    return rows[0];
-  })
-}
+exports.retrieveUser = (username) => {
+  return db
+    .query(`SELECT * FROM users WHERE username = $1;`, [username])
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Non-existent Username" });
+      }
+      return rows[0];
+    });
+};
 
 exports.updateComment = (comment_id, inc_votes) => {
-  console.log(inc_votes)
   if (!inc_votes) {
     return Promise.reject({ status: 400, msg: "Invalid Form Body" });
   }
   return db
-  .query(`UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *;`,[inc_votes,comment_id])
-  .then(({rows})=>{
-    if (rows.length === 0) {
-      return Promise.reject({ status: 404, msg: "Non-existent Comment ID" });
-    }
-    return rows[0]
-  })
-}
+    .query(
+      `UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *;`,
+      [inc_votes, comment_id]
+    )
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Non-existent Comment ID" });
+      }
+      return rows[0];
+    });
+};
+
+exports.createArticle = (newArticle) => {
+  if (!newArticle.article_img_url) {
+    newArticle.article_img_url =
+      "https://grin2b.com/wp-content/uploads/2017/01/Grin2B_icon_NEWS.png";
+  }
+
+  return db
+    .query(
+      `INSERT INTO articles(author,title,body,topic,article_img_url) VALUES ($1,$2,$3,$4,$5) RETURNING *;`,
+      [
+        newArticle.author,
+        newArticle.title,
+        newArticle.body,
+        newArticle.topic,
+        newArticle.article_img_url,
+      ]
+    )
+    .then(({ rows }) => {
+      const newArticle = rows[0];
+      const newArticleID = newArticle.article_id;
+
+      return db.query(
+        `SELECT articles.*,
+      COUNT(comments.article_id)::INT AS comment_count
+      FROM comments
+      RIGHT JOIN articles
+      ON articles.article_id = comments.article_id
+      WHERE articles.article_id = $1
+      GROUP BY articles.article_id`,
+        [newArticleID]
+      );
+    })
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};

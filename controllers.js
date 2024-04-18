@@ -12,6 +12,7 @@ const {
   validateQuery,
   retrieveUser,
   updateComment,
+  createArticle
 } = require("./model");
 
 exports.getTopics = (req, res, next) => {
@@ -123,3 +124,14 @@ exports.patchComment = (req, res, next) => {
       next(err);
     });
 };
+
+exports.postArticle = (req,res,next) =>{
+  const newArticle = req.body;
+  createArticle(newArticle)
+    .then((article) => {
+      res.status(201).send({ newArticle: article });
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
