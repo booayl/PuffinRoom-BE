@@ -12,7 +12,8 @@ const {
   validateQuery,
   retrieveUser,
   updateComment,
-  createArticle
+  createArticle,
+  countRows
 } = require("./model");
 
 exports.getTopics = (req, res, next) => {
@@ -33,12 +34,12 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  const { sort_by, order, topic } = req.query;
+  const { sort_by, order, topic, limit, p } = req.query;
   const queries = Object.keys(req.query);
 
-  Promise.all([fetchArticles(sort_by, order, topic), validateQuery(queries)])
+  Promise.all([fetchArticles(sort_by, order, topic, limit, p), validateQuery(queries)])
     .then(([articles]) => {
-      res.status(200).send({ allArticles: articles });
+      res.status(200).send({ allArticles: articles});
     })
     .catch((err) => {
       next(err);

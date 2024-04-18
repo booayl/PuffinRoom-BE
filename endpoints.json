@@ -34,10 +34,12 @@
       {
         "topic": "will respond with the articles by the topic value specified in the query.",
         "sort_by": "will respond with the articles sort by any valid column from articles.",
-        "order": "will respond in selected (ascending/descending) order"
+        "order": "will respond in selected (ascending/descending) order",
+        "limit" : "pagination: which limits the number of responses (defaults to 10)",
+        "p":"pagination: page, specifies the page at which to start (calculated using limit)"
       }
     ],
-    "queries": ["topic", "sort_by", "order"],
+    "queries": ["topic", "sort_by", "order","limit","p"],
     "exampleQuery": [
       "GET /api/articles?topic=cats",
       "GET /api/articles?sort_by=comment_count&order=asc",
@@ -54,7 +56,8 @@
           "created_at": "2020-07-09T20:11:00.000Z",
           "votes": 100,
           "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-          "comment_count": 6
+          "comment_count": 6,
+          "total_count": 10
         }
       ]
     }

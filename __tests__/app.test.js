@@ -92,7 +92,6 @@ describe("GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body: { allArticles } }) => {
-        expect(allArticles.length).toBe(13);
         expect(allArticles).toBeSortedBy("created_at", { descending: true });
         allArticles.forEach((article) => {
           expect(article).toMatchObject({
@@ -384,7 +383,7 @@ describe("GET /api/articles (Add Feature: topic query)", () => {
       .expect(404)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("Non-existent Topic");
+        expect(msg).toBe("Query Not Found");
       });
   });
   test("GET400: Respond with an error when invalid query", () => {
@@ -641,7 +640,7 @@ describe("POST /api/articles", () => {
         });
       });  
   });
-  test("POST404: Respond with an error when new foreign key (author & topic) is invalid or non-existence", () => {
+  test("POST404: Respond with an error when foreign key (author & topic) is invalid or non-existence", () => {
     const newPost = {
       author: 123,
       title: "Which is your favourite Taylor Swift boyfriend",
@@ -671,3 +670,55 @@ describe("POST /api/articles", () => {
       });
   });
 });
+
+describe("GET /api/articles (pagination)",()=>{
+  test("GET200: Implement pagination on /api/articles, accept two queries: limit (default to 10) and p (start page), will responds with the articles paginated according to the inputs, and a total_count preperty",()=>{
+    return request(app)
+      .get("/api/articles?sort_by=article_id&order=asc&topic=mitch&limit=3&p=2")
+      .expect(200)
+      .then(({ body: { allArticles } }) => {
+        expect(allArticles.length).toBe(3);
+        allArticles.forEach((article) => {
+          expect(article).toMatchObject({
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.toBeDateString(),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(Number),
+            total_count: 12
+          });
+        });
+      });
+  })
+  test("GET200: set limit default to 10 and page default to first page",()=>{
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { allArticles } }) => {
+        expect(allArticles.length).toBe(10);
+        allArticles.forEach((article) => {
+          expect(article).toMatchObject({
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.toBeDateString(),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(Number),
+            total_count: 16
+          });
+        });
+      });
+  })
+  test("GET400: respond with error when requested page not exisit",()=>{
+    return request(app)
+      .get("/api/articles?p=3")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Query Not Found");
+      });
+  })
+})

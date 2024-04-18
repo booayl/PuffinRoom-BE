@@ -9,8 +9,8 @@ exports.fetchTopics = () => {
 exports.fetchArticleById = (article_id) => {
   let sqlQueryString = `SELECT articles.*,
     COUNT(comments.article_id)::INT AS comment_count
-    FROM comments
-    RIGHT JOIN articles
+    FROM articles
+    LEFT JOIN comments
     ON articles.article_id = comments.article_id
     WHERE articles.article_id = $1
     GROUP BY articles.article_id`;
@@ -23,7 +23,13 @@ exports.fetchArticleById = (article_id) => {
   });
 };
 
-exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
+exports.fetchArticles = (
+  sort_by = "created_at",
+  order = "desc",
+  topic,
+  limit = 10,
+  p
+) => {
   const validSortBys = [
     "created_at",
     "votes",
@@ -42,9 +48,10 @@ exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
   }
 
   let sqlQueryString = `SELECT articles.*,
-    COUNT(comments.article_id)::INT AS comment_count
-    FROM comments
-    RIGHT JOIN articles
+    COUNT(comments.article_id)::INT AS comment_count,
+    COUNT(*) OVER()::INT AS total_count
+    FROM articles
+    LEFT JOIN comments
     ON articles.article_id = comments.article_id `;
 
   let topicValue = [];
@@ -54,11 +61,15 @@ exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
     topicValue.push(topic);
   }
 
-  sqlQueryString += `GROUP BY articles.article_id ORDER BY ${sort_by} ${order.toUpperCase()}`;
+  sqlQueryString += `GROUP BY articles.article_id ORDER BY ${sort_by} ${order.toUpperCase()} LIMIT ${limit} `;
+
+  if (p) {
+    sqlQueryString += `OFFSET ${limit} * ${p - 1};`;
+  }
 
   return db.query(sqlQueryString, topicValue).then(({ rows }) => {
     if (rows.length === 0) {
-      return Promise.reject({ status: 404, msg: "Non-existent Topic" });
+      return Promise.reject({ status: 404, msg: "Query Not Found" });
     }
     return rows;
   });
@@ -71,7 +82,7 @@ exports.validateQuery = (queries) => {
     )
     .then(({ rows }) => {
       let validQuery = rows.flatMap(Object.values);
-      validQuery += [, "sort_by", "order"];
+      validQuery += [, "sort_by", "order", "limit", "p"];
 
       const invalidQuery = queries.filter(
         (query) => !validQuery.includes(query)
