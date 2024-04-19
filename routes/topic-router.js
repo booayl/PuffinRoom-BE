@@ -2,13 +2,11 @@ const topicRouter = require("express").Router();
 
 const {
   getTopics,
-  getCommentsByArticleID,
-  postComment,
-  patchArticle,
-  deleteComment,
-  getUsers,
+  postTopic
 } = require("../controllers");
 
-topicRouter.get('/', getTopics);
+topicRouter.route('/')
+.get(getTopics)
+.post(postTopic);
 
 module.exports = topicRouter;

@@ -44,7 +44,8 @@
       "GET /api/articles?topic=cats",
       "GET /api/articles?sort_by=comment_count&order=asc",
       "GET /api/articles?sort_by=author",
-      "GET /api/article?order=asc"
+      "GET /api/article?order=asc",
+      "GET /api/articles?sort_by=article_id&order=asc&topic=mitch&limit=3&p=2"
     ],
     "exampleResponse": {
       "articles": [
@@ -64,7 +65,7 @@
   },
   "GET /api/articles/:article_id/comments": {
     "description": "responds with an array of comments objects from selected article by article ID. Comments served with the most recent comments first.",
-    "queries": ["sort_by", "order"],
+    "queries": ["sort_by", "order","limit","p"],
     "exampleResponse": {
       "comments": [
         {
@@ -189,5 +190,26 @@
         }
       ]
     }
+  },
+  "POST /api/topics":{
+    "description": "adds a new topic, will responds with the newly added article",
+    "queries": [],
+    " exampleRequest": {
+      "slug": "Arts",
+      "description": "because its arts"
+    },
+    "exampleResponse": {
+      "postedArticle": [
+        {
+          "slug": "Arts",
+          "description": "because its arts"
+        }
+      ]
+    }
+  },
+  "DELETE /api/articles/:article_id":{
+    "description": "delete an article based on its id, and its respective comments.",
+    "queries": [],
+    "exampleResponse": "status 204 and no content"
   }
 }

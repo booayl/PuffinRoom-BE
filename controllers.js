@@ -1,3 +1,4 @@
+const { keys } = require("./db/data/test-data/articles");
 const comments = require("./db/data/test-data/comments");
 const {
   fetchTopics,
@@ -13,7 +14,9 @@ const {
   retrieveUser,
   updateComment,
   createArticle,
-  countRows
+  validateQueryPagination,
+  createTopic,
+  removeArticle
 } = require("./model");
 
 exports.getTopics = (req, res, next) => {
@@ -37,7 +40,11 @@ exports.getArticles = (req, res, next) => {
   const { sort_by, order, topic, limit, p } = req.query;
   const queries = Object.keys(req.query);
 
-  Promise.all([fetchArticles(sort_by, order, topic, limit, p), validateQuery(queries)])
+  Promise.all([
+    fetchArticles(sort_by, order, topic, limit, p),
+    validateQuery(queries),
+    // checkTopicExists(topic)
+  ])
     .then(([articles]) => {
       res.status(200).send({ allArticles: articles});
     })
@@ -48,12 +55,10 @@ exports.getArticles = (req, res, next) => {
 
 exports.getCommentsByArticleID = (req, res, next) => {
   const { article_id } = req.params;
-  const { sort_by, order } = req.query;
+  const { sort_by, order, limit, p  } = req.query;
+  const queries = Object.keys(req.query);
 
-  Promise.all([
-    fetchCommentsByArticleID(article_id, sort_by, order),
-    checkArticleExists(article_id),
-  ])
+  Promise.all([fetchCommentsByArticleID(article_id, sort_by, order, limit, p), checkArticleExists(article_id), validateQueryPagination(queries)])
     .then(([comments]) => {
       res.status(200).send({ allComments: comments });
     })
@@ -136,3 +141,25 @@ exports.postArticle = (req,res,next) =>{
       next(err);
     });
 }
+
+exports.postTopic = (req,res,next) =>{
+  const newTopic = req.body;
+  createTopic(newTopic)
+    .then((topic) => {
+      res.status(201).send({ newTopic: topic });
+    })
+    .catch((err) => {
+      next(err);
+    });
+}
+
+exports.deleteArticle = (req,res,next) =>{
+  const { article_id } = req.params;
+  removeArticle(article_id)
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch((err) => {
+      next(err);
+    });
+};

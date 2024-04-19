@@ -32,6 +32,11 @@ app.use((err, req, res, next) => {
   if (err.code === "23502") {
     res.status(400).send({ msg: "Incomplete/Missing Body" });
   }
+
+  if(err.code === "23505"){
+    res.status(409).send({ msg: "Body Already Exists" });
+  }
+
   next(err);
 });
 

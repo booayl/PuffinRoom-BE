@@ -28,7 +28,7 @@ exports.fetchArticles = (
   order = "desc",
   topic,
   limit = 10,
-  p
+  p = 1
 ) => {
   const validSortBys = [
     "created_at",
@@ -67,12 +67,16 @@ exports.fetchArticles = (
     sqlQueryString += `OFFSET ${limit} * ${p - 1};`;
   }
 
-  return db.query(sqlQueryString, topicValue).then(({ rows }) => {
-    if (rows.length === 0) {
-      return Promise.reject({ status: 404, msg: "Query Not Found" });
-    }
-    return rows;
-  });
+  return db.query(`SELECT slug FROM topics WHERE slug = $1`, [topic])
+    .then(({ rows }) => {
+      if (rows.length === 0 && topic) {
+        return Promise.reject({ status: 404, msg: "Query Not Found" });
+      }
+      return db.query(sqlQueryString, topicValue);
+    })
+    .then(({ rows }) => {
+      return rows;
+    });
 };
 
 exports.validateQuery = (queries) => {
@@ -97,19 +101,37 @@ exports.validateQuery = (queries) => {
 exports.fetchCommentsByArticleID = (
   article_id,
   sort_by = "created_at",
-  order = "DESC"
+  order = "DESC",
+  limit = 10,
+  p = 1
 ) => {
   let sqlQueryString = `SELECT comments.* 
     FROM comments 
     INNER JOIN articles 
     ON comments.article_id = articles.article_id `;
 
-  sqlQueryString += `WHERE comments.article_id = $1 ORDER BY ${sort_by} ${order};`;
+  sqlQueryString += `WHERE comments.article_id = $1 ORDER BY ${sort_by} ${order} LIMIT ${limit} `;
+
+  if (p) {
+    sqlQueryString += `OFFSET ${limit} * ${p - 1};`;
+  }
 
   return db.query(sqlQueryString, [article_id]).then(({ rows }) => {
     return rows;
   });
 };
+
+exports.validateQueryPagination = (queries) => {
+   const validQuery = ["limit", "p"];
+
+    const invalidQuery = queries.filter(
+      (query) => !validQuery.includes(query)
+    );
+
+    if (invalidQuery.length > 0) {
+      return Promise.reject({ status: 400, msg: "Invalid query" });
+    }
+  }
 
 exports.checkArticleExists = (article_id) => {
   return db
@@ -231,3 +253,23 @@ exports.createArticle = (newArticle) => {
       return rows[0];
     });
 };
+
+exports.createTopic = (newTopic) =>{
+  return db.query(
+    `INSERT INTO topics(slug, description) VALUES ($1, $2) RETURNING *`,[newTopic.slug,newTopic.description]
+  )
+  .then(({rows})=>{
+    return rows[0]
+  })
+}
+
+exports.removeArticle = (article_id) =>{
+  return db
+    .query(`DELETE FROM articles WHERE article_id = $1;`, [article_id])
+    .then((result) => {
+      if (result.rowCount === 0) {
+        return Promise.reject({ status: 404, msg: "Non-existent Article ID" });
+      }
+      return result;
+    });
+}

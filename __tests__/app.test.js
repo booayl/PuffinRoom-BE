@@ -115,7 +115,6 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/1/comments")
       .expect(200)
       .then(({ body: { allComments } }) => {
-        expect(allComments.length).toBe(11);
         expect(allComments).toBeSortedBy("created_at", { descending: true });
         allComments.forEach((comment) => {
           expect(comment).toMatchObject({
@@ -374,6 +373,16 @@ describe("GET /api/articles (Add Feature: topic query)", () => {
             article_img_url: expect.any(String),
             comment_count: expect.any(Number),
           });
+        });
+      });
+  });
+  test("GET200: Endpoint accept topic query and responds articles with seleted topics", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body: { allArticles } }) => {
+        allArticles.forEach((article) => {
+          expect(article).toEqual([]);
         });
       });
   });
@@ -712,13 +721,118 @@ describe("GET /api/articles (pagination)",()=>{
         });
       });
   })
-  test("GET400: respond with error when requested page not exisit",()=>{
+  test("GET400: respond with error when invalid query",()=>{
     return request(app)
-      .get("/api/articles?p=3")
+      .get("/api/articles?page=10")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Invalid query");
+      });
+  })
+})
+
+describe("GET /api/articles/:article_id/comments  (pagination)",()=>{
+  test("GET200: Implement pagination on /api/articles/:article_id/comments, accept two queries: limit (default to 10) and p (start page), will responds with the comments paginated according to the above inputs",()=>{
+    return request(app)
+      .get("/api/articles/1/comments?limit=3&p=2")
+      .expect(200)
+      .then(({ body: { allComments } }) => {
+        expect(allComments.length).toBe(3);
+        allComments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.toBeDateString(),
+            author: expect.any(String),
+            body: expect.any(String),
+            article_id: 1,
+          });
+        });
+      });
+  })
+  test("GET400: respond with error when invalid query",()=>{
+    return request(app)
+      .get("/api/articles/1/comments?page=10")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Invalid query");
+      });
+  })
+})
+
+describe("POST /api/topics",()=>{
+  test("POST201: adds a new topic, will responds with the newly added article.", () => {
+    const newTopic = {
+      "slug": "Arts",
+      "description": "because its arts"
+    }
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(201)
+      .then(({ body: { newTopic } }) => {
+        expect(newTopic).toMatchObject({
+          "slug": "Arts",
+          "description": "because its arts"
+        });
+      });
+  });
+  test("POST409: Respond with an error when slug(PRIMARY KEY) already existed", () => {
+    const newTopic = {
+      "slug": "mitch",
+      "description": "because its arts"
+    }
+    return request(app)
+    .post("/api/topics")
+    .send(newTopic)
+      .expect(409)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Body Already Exists");
+      });
+  });
+  test("POST400: Respond with an error when incomplete/missing body", () => {
+    const newTopic = {
+      "description": "abc",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Incomplete/Missing Body");
+      });
+  });
+})
+
+describe("DELETE /api/articles/:article_id",()=>{
+  test("DELETE204: delete an article by its id, and its respective comments", () => {
+    return request(app)
+      .delete("/api/articles/1")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+      });
+  });
+  test("DELETE404: Respond with an error when passed ID is valid but non-existent.", () => {
+    return request(app)
+      .delete("/api/articles/99")
       .expect(404)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("Query Not Found");
+        expect(msg).toBe("Non-existent Article ID");
       });
-  })
+  });
+  test("DELETE400: Respond with an error when an input comment ID is the incorrect type", () => {
+    return request(app)
+      .delete("/api/articles/not-a-number")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
+      });
+  });
 })
