@@ -42,8 +42,7 @@ exports.getArticles = (req, res, next) => {
 
   Promise.all([
     fetchArticles(sort_by, order, topic, limit, p),
-    validateQuery(queries),
-    // checkTopicExists(topic)
+    validateQuery(queries)
   ])
     .then(([articles]) => {
       res.status(200).send({ allArticles: articles});

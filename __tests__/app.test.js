@@ -703,7 +703,7 @@ describe("GET /api/articles (pagination)",()=>{
   })
   test("GET200: set limit default to 10 and page default to first page",()=>{
     return request(app)
-      .get("/api/articles")
+      .get("/api/articles?")
       .expect(200)
       .then(({ body: { allArticles } }) => {
         expect(allArticles.length).toBe(10);
