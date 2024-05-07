@@ -27,7 +27,7 @@ exports.fetchArticles = (
   sort_by = "created_at",
   order = "desc",
   topic,
-  limit = 9,
+  limit = 10,
   p = 1
 ) => {
   const validSortBys = [
