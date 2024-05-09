@@ -145,10 +145,6 @@ exports.checkArticleExists = (article_id) => {
 };
 
 exports.createComment = (article_id, newComment) => {
-  if (newComment.newComment.length = 0) {
-    return Promise.reject({ status: 400, msg: "Invalid Form Body" })
-  }
-
   return db
     .query(
       `INSERT INTO comments(author,body,article_id) VALUES ($1,$2,$3) RETURNING *;`,
