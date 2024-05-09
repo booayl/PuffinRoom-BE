@@ -221,9 +221,10 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(msg).toBe("Not Found");
       });
   });
-  test("POST400: Respond with an error when incomplete/missing body", () => {
+  test.only("POST400: Respond with an error when incomplete/missing body", () => {
     const newComment = {
       username: "rogersop",
+      newComment: ""
     };
     return request(app)
       .post("/api/articles/2/comments")
