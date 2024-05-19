@@ -606,7 +606,7 @@ describe("POST /api/articles", () => {
       body: "Joe, I mean have you seen the easter eggs for The Tortured Poets Department? ",
       topic : "cats",
       article_img_url : "https://media.tenor.com/K-4KulpZoNUAAAAM/yes-taylor-swift.gif"
-    };
+    }; 
     return request(app)
       .post("/api/articles")
       .send(newPost)
