@@ -16,7 +16,8 @@ const {
   createArticle,
   validateQueryPagination,
   createTopic,
-  removeArticle
+  removeArticle,
+  removeTopic
 } = require("./model");
 
 exports.getTopics = (req, res, next) => {
@@ -155,6 +156,17 @@ exports.postTopic = (req,res,next) =>{
 exports.deleteArticle = (req,res,next) =>{
   const { article_id } = req.params;
   removeArticle(article_id)
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.deleteTopic = (req,res,next) =>{
+  const { topic_slug } = req.params;
+  removeTopic(topic_slug)
     .then(() => {
       res.status(204).send();
     })

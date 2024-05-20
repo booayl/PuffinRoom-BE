@@ -263,29 +263,24 @@ exports.createTopic = (newTopic) =>{
   })
 }
 
-exports.deleteTopic = (topic) =>{
-  return db
-    .query(`DELETE FROM topics WHERE slug = $1;`, [topic]);
-}
-
 exports.removeArticle = (article_id) =>{
   return db
-    .query(`DELETE FROM articles WHERE article_id = $1 RETURNING topic;`, [article_id])
+    .query(`DELETE FROM articles WHERE article_id = $1;`, [article_id])
     .then((result) => {
       if (result.rowCount === 0) {
         return Promise.reject({ status: 404, msg: "Non-existent Article ID" });
       }
-      const deletedTopic = result.rows[0].topic;
-      return db.query(`SELECT COUNT(*) AS count FROM articles WHERE topic = $1;`, [deletedTopic])
-        .then((countResult) => {
-          const articleCount = countResult.rows[0].count;
-          if (articleCount === 0) {
-            return exports.deleteTopic(deletedTopic);
-          }
-          return result;
-        });
+      return result;
     });
 }
 
-
-//if remove article and topic = 0, remove topic as well
+exports.removeTopic = (topic_slug) =>{
+  return db
+  .query(`DELETE FROM topics WHERE slug = $1;`, [topic_slug])
+  .then((result) => {
+    if (result.rowCount === 0) {
+      return Promise.reject({ status: 404, msg: "Non-existent Topic" });
+    }
+    return result;
+  });
+}

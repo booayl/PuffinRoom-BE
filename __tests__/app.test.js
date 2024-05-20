@@ -221,7 +221,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(msg).toBe("Not Found");
       });
   });
-  test.only("POST400: Respond with an error when incomplete/missing body", () => {
+  test("POST400: Respond with an error when incomplete/missing body", () => {
     const newComment = {
       username: "rogersop",
       newComment: ""
@@ -834,6 +834,26 @@ describe("DELETE /api/articles/:article_id",()=>{
       .then(({ body }) => {
         const { msg } = body;
         expect(msg).toBe("Bad Request");
+      });
+  });
+})
+
+describe("DELETE /api/topic/:topic_slug",()=>{
+  test("DELETE204: delete topic by its slug", () => {
+    return request(app)
+      .delete("/api/topics/paper")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+      });
+  });
+  test("DELETE404: Respond with an error when slug is valid but non-existent.", () => {
+    return request(app)
+      .delete("/api/topics/abc")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Non-existent Topic");
       });
   });
 })

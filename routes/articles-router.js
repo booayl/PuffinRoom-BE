@@ -19,7 +19,6 @@ articleRouter.route('/:article_id')
 .patch(patchArticle)
 .delete(deleteArticle)
 
-
 articleRouter.route('/:article_id/comments')
 .get(getCommentsByArticleID)
 .post(postComment);

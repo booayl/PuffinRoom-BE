@@ -211,5 +211,10 @@
     "description": "delete an article based on its id, and its respective comments.",
     "queries": [],
     "exampleResponse": "status 204 and no content"
+  },
+  "DELETE /api/topics/:topic_slug":{
+    "description": "delete topic based on its slug.",
+    "queries": [],
+    "exampleResponse": "status 204 and no content"
   }
 }
